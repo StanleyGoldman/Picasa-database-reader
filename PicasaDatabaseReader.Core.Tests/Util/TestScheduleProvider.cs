@@ -4,7 +4,7 @@ using PicasaDatabaseReader.Core.Scheduling;
 
 namespace PicasaDatabaseReader.Core.Tests.Util
 {
-    public sealed class TestScheduleProvider : ISchedulerProvider
+    public sealed class TestScheduleProvider : IUISchedulerProvider
     {
         public TestScheduler CurrentThread { get; } = new TestScheduler();
         public TestScheduler Immediate { get; } = new TestScheduler();
@@ -12,10 +12,10 @@ namespace PicasaDatabaseReader.Core.Tests.Util
         public TestScheduler ThreadPool { get; } = new TestScheduler();
         public TestScheduler TaskPool { get; } = new TestScheduler();
 
-        IScheduler ISchedulerProvider.CurrentThread => CurrentThread;
-        IScheduler ISchedulerProvider.Immediate => Immediate;
-        IScheduler ISchedulerProvider.NewThread => NewThread;
+        IScheduler IUISchedulerProvider.CurrentThread => CurrentThread;
+        IScheduler IUISchedulerProvider.Immediate => Immediate;
+        IScheduler IUISchedulerProvider.NewThread => NewThread;
         IScheduler ISchedulerProvider.ThreadPool => ThreadPool;
-        IScheduler ISchedulerProvider.TaskPool => TaskPool;
+        IScheduler IUISchedulerProvider.TaskPool => TaskPool;
     }
 }
