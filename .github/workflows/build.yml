@@ -16,7 +16,7 @@ jobs:
         dotnet-version: '2.2.103' # SDK Version to use.
 
     - name: DotNet build
-      run: -|
+      run: |-
         dotnet build -c Release
         Get-ChildItem -Recurse -Directory .\
 
