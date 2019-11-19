@@ -1,7 +1,7 @@
 using System.IO.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using PicasaDatabaseReader.Core.Scheduling;
+using Serilog;
 
 namespace PicasaDatabaseReader.Core.Tests.Util
 {
@@ -15,7 +15,7 @@ namespace PicasaDatabaseReader.Core.Tests.Util
             var serviceCollection = databaseReaderTests.GetServiceCollection()
                 .AddSingleton(fileSystem)
                 .AddScoped(provider => new DatabaseReader(provider.GetService<IFileSystem>(), directoryPath,
-                    provider.GetService<ILogger<DatabaseReader>>(), provider.GetService<ISchedulerProvider>()));
+                    provider.GetService<ILogger>(), provider.GetService<ISchedulerProvider>()));
 
             if (testScheduleProvider != null)
             {
