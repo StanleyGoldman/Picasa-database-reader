@@ -13,7 +13,7 @@ jobs:
       with:
         dotnet-version: '2.2.103' # SDK Version to use.
 
-    - name: Choco help
+    - name: Choco install
       uses: crazy-max/ghaction-chocolatey@v1
       with:
         args: install 7zip.install -y
