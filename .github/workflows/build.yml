@@ -7,18 +7,13 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - name: Setup dotnet
+    - name: Checkout
       uses: actions/checkout@v1
 
-    - name: Choco install
+    - name: Setup dotnet
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: '2.2.103' # SDK Version to use.
-
-    - name: Choco install
-      uses: crazy-max/ghaction-chocolatey@v1
-      with:
-        args: install 7zip.install -y
 
     - name: DotNet build
       run: dotnet build -c Release
@@ -26,11 +21,8 @@ jobs:
     - name: DotNet Test
       run: dotnet test -c Release --no-build
 
-    - name: Zip Artifacts
-      run: 7z a SonOfPicasso.zip .\PicasaDatabaseReader.Core\bin\Release\netstandard2.0\*
-
     - name: Upload Artifacts
       uses: actions/upload-artifact@master
       with:
         name: Release build
-        path: SonOfPicasso.zip
+        path: .\PicasaDatabaseReader.Core\bin\Release\netstandard2.0\*
