@@ -31,7 +31,7 @@ namespace PicasaDatabaseReader.Core.Tests
             var containerBuilder = new ContainerBuilder();
             containerBuilder.RegisterLogger();
             containerBuilder.RegisterInstance(_mockFileSystem).As<IFileSystem>();
-            containerBuilder.RegisterInstance(TestScheduleProvider).As<ISchedulerProvider>();
+            containerBuilder.RegisterInstance(TestScheduleProvider).As<IUISchedulerProvider>();
             containerBuilder.RegisterType<DatabaseReader>();
 
             _container = containerBuilder.Build();
