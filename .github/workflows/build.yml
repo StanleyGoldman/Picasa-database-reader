@@ -13,8 +13,22 @@ jobs:
       with:
         dotnet-version: '2.2.103' # SDK Version to use.
 
+    - name: Choco help
+      uses: crazy-max/ghaction-chocolatey@v1
+      with:
+        args: install 7zip.install -y
+
     - name: DotNet build
-      run: dotnet build
+      run: dotnet build -c Release
 
     - name: DotNet Test
-      run: dotnet test
+      run: dotnet test 
+
+    - name: Zip Artifacts
+      run: 7z a SonOfPicasso.zip .\PicasaDatabaseReader.Core\bin\Debug\netstandard2.0\*
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@master
+      with:
+        name: my-artifact
+        path: path/to/artifact
