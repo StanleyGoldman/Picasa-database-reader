@@ -22,7 +22,7 @@ jobs:
       run: dotnet build -c Release
 
     - name: DotNet Test
-      run: dotnet test 
+      run: dotnet test -c Release --no-build
 
     - name: Zip Artifacts
       run: 7z a SonOfPicasso.zip .\PicasaDatabaseReader.Core\bin\Debug\netstandard2.0\*
