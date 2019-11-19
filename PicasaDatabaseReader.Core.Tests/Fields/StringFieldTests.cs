@@ -9,9 +9,9 @@ using PicasaDatabaseReader.Core.Tests.Util;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace PicasaDatabaseReader.Core.Tests
+namespace PicasaDatabaseReader.Core.Tests.Fields
 {
-    public class StringFieldTests : UnitTestsBase<StringFieldTests>
+    public class StringFieldTests : UnitTestsBase
     {
         protected internal readonly TestScheduleProvider TestScheduleProvider = new TestScheduleProvider();
 

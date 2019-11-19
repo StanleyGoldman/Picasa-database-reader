@@ -10,7 +10,7 @@ using Xunit.Abstractions;
 
 namespace PicasaDatabaseReader.Core.Tests.Extensions
 {
-    public class FileSystemExtensionTests : UnitTestsBase<FileSystemExtensionTests>
+    public class FileSystemExtensionTests : UnitTestsBase
     {
         public FileSystemExtensionTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {

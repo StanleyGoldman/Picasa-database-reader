@@ -22,18 +22,22 @@ namespace PicasaDatabaseReader.Core
         private const string ThumbindexTableName = "thumbindex";
 
         private readonly IFileSystem _fileSystem;
-        private readonly string _pathToDatabase;
+        private string _pathToDatabase;
         private readonly ILogger _logger;
         private readonly ISchedulerProvider _scheduler;
 
-        public DatabaseReader(IFileSystem fileSystem, string pathToDatabase, ILogger logger, ISchedulerProvider scheduler = null)
+        public DatabaseReader(IFileSystem fileSystem, ILogger logger, ISchedulerProvider scheduler = null)
         {
             _fileSystem = fileSystem;
-            _pathToDatabase = pathToDatabase;
             _logger = logger;
             _scheduler = scheduler ?? new SchedulerProvider();
 
             _logger.Debug("Constructed pathToDatabase:{pathToDatabase}");
+        }
+        
+        public void Initialize(string pathToDatabase)
+        {
+            _pathToDatabase = pathToDatabase;
         }
 
         public IObservable<string> GetTableNames()

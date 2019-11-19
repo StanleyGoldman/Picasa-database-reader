@@ -10,7 +10,7 @@ using Xunit.Abstractions;
 
 namespace PicasaDatabaseReader.Core.Tests.Extensions
 {
-    public class ObservableExtensionTests : UnitTestsBase<ObservableExtensionTests>
+    public class ObservableExtensionTests : UnitTestsBase
     {
         protected internal readonly TestScheduleProvider TestScheduleProvider = new TestScheduleProvider();
 
