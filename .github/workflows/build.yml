@@ -16,9 +16,7 @@ jobs:
         dotnet-version: '2.2.103' # SDK Version to use.
 
     - name: DotNet build
-      run: |-
-        dotnet build -c Release
-        Get-ChildItem -Recurse -Directory .\
+      run: dotnet build -c Release
 
     - name: DotNet Test
       run: dotnet test -c Release --no-build
@@ -27,4 +25,4 @@ jobs:
       uses: actions/upload-artifact@master
       with:
         name: Release build
-        path: PicasaDatabaseReader.Core\bin\Release\netstandard2.0\*
+        path: PicasaDatabaseReader.Core\bin\Release\netstandard2.1\*
