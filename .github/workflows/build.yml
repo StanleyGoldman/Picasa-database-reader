@@ -7,14 +7,22 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - uses: actions/checkout@v1
+    - name: Checkout
+      uses: actions/checkout@v1
 
-    - uses: actions/setup-dotnet@v1
+    - name: Setup dotnet
+      uses: actions/setup-dotnet@v1
       with:
         dotnet-version: '2.2.103' # SDK Version to use.
 
     - name: DotNet build
-      run: dotnet build
+      run: dotnet build -c Release
 
     - name: DotNet Test
-      run: dotnet test
+      run: dotnet test -c Release --no-build
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@master
+      with:
+        name: Release build
+        path: PicasaDatabaseReader.Core\bin\Release\netstandard2.1
