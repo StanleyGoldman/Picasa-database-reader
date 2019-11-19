@@ -1,21 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
 using System.Reactive;
-using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 using PicasaDatabaseReader.Core.Extensions;
 using PicasaDatabaseReader.Core.Fields;
 using PicasaDatabaseReader.Core.Interfaces;
 using PicasaDatabaseReader.Core.Scheduling;
+using Serilog;
 
 namespace PicasaDatabaseReader.Core
 {
@@ -25,25 +22,29 @@ namespace PicasaDatabaseReader.Core
         private const string ThumbindexTableName = "thumbindex";
 
         private readonly IFileSystem _fileSystem;
-        private readonly string _pathToDatabase;
-        private readonly ILogger<DatabaseReader> _logger;
+        private string _pathToDatabase;
+        private readonly ILogger _logger;
         private readonly ISchedulerProvider _scheduler;
 
-        public DatabaseReader(IFileSystem fileSystem, string pathToDatabase, ILogger<DatabaseReader> logger = null, ISchedulerProvider scheduler = null)
+        public DatabaseReader(IFileSystem fileSystem, ILogger logger, ISchedulerProvider scheduler = null)
         {
             _fileSystem = fileSystem;
-            _pathToDatabase = pathToDatabase;
-            _logger = logger ?? NullLogger<DatabaseReader>.Instance;
+            _logger = logger;
             _scheduler = scheduler ?? new SchedulerProvider();
 
-            _logger.LogDebug("Constructed pathToDatabase:{pathToDatabase}");
+            _logger.Debug("Constructed pathToDatabase:{pathToDatabase}");
+        }
+        
+        public void Initialize(string pathToDatabase)
+        {
+            _pathToDatabase = pathToDatabase;
         }
 
         public IObservable<string> GetTableNames()
         {
             return Observable.Defer(() =>
             {
-                _logger.LogTrace("GetTableNames");
+                _logger.Verbose("GetTableNames");
 
                 EnsureDatabaseExists();
 

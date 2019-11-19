@@ -7,5 +7,6 @@ namespace PicasaDatabaseReader.Core.Interfaces
     {
         IObservable<string> GetTableNames();
         IObservable<DataTable> GetDataTable(string tableName);
+        void Initialize(string pathToDatabase);
     }
 }

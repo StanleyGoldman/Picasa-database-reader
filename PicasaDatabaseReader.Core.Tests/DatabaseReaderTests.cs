@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Abstractions;
 using System.IO.Abstractions.TestingHelpers;
 using System.Linq;
 using System.Reactive;
@@ -8,26 +9,38 @@ using System.Reactive.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Autofac;
+using AutofacSerilogIntegration;
 using FluentAssertions;
-using Microsoft.Extensions.Logging;
+using PicasaDatabaseReader.Core.Scheduling;
 using PicasaDatabaseReader.Core.Tests.Util;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace PicasaDatabaseReader.Core.Tests
 {
-    public class DatabaseReaderTests : UnitTestsBase<DatabaseReaderTests>
+    public class DatabaseReaderTests : UnitTestsBase
     {
         protected internal readonly TestScheduleProvider TestScheduleProvider = new TestScheduleProvider();
+        private readonly MockFileSystem _mockFileSystem;
+        private readonly IContainer _container;
 
         public DatabaseReaderTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
+            _mockFileSystem = new MockFileSystem();
+            var containerBuilder = new ContainerBuilder();
+            containerBuilder.RegisterLogger();
+            containerBuilder.RegisterInstance(_mockFileSystem).As<IFileSystem>();
+            containerBuilder.RegisterInstance(TestScheduleProvider).As<ISchedulerProvider>();
+            containerBuilder.RegisterType<DatabaseReader>();
+
+            _container = containerBuilder.Build();
         }
 
         [Fact]
         public void ShouldGetTableNames()
         {
-            Logger.LogInformation("ShouldGetTableNames");
+            Logger.Information("ShouldGetTableNames");
 
             var directoryPath = Path.Combine("c:\\", string.Join("\\", Faker.Lorem.Words()));
 
@@ -42,11 +55,13 @@ namespace PicasaDatabaseReader.Core.Tests
                 .ToArray();
 
             var mockFileData = new MockFileData(BitConverter.GetBytes(DatabaseReader.TableFileHeader));
-            var mockFiles = args.ToDictionary(arg => arg.path, _ => mockFileData);
+            foreach (var arg in args)
+            {
+                _mockFileSystem.AddFile(arg.path, mockFileData);
+            }
 
-            var mockFileSystem = new MockFileSystem(mockFiles);
-
-            var databaseReader = this.CreateDatabaseReader(mockFileSystem, directoryPath, TestScheduleProvider);
+            var databaseReader = _container.Resolve<DatabaseReader>();
+            databaseReader.Initialize(directoryPath);
 
             var tableNames = databaseReader
                 .GetTableNames();
@@ -63,7 +78,7 @@ namespace PicasaDatabaseReader.Core.Tests
         [Fact]
         public async Task ShouldGetFieldFiles()
         {
-            Logger.LogInformation("ShouldGetFieldFiles");
+            Logger.Information("ShouldGetFieldFiles");
 
             var directoryPath = Path.Combine("c:\\", string.Join("\\", Faker.Lorem.Words()));
 
@@ -78,11 +93,13 @@ namespace PicasaDatabaseReader.Core.Tests
                 .ToArray();
 
             var mockFileData = new MockFileData(string.Empty);
-            var mockFiles = args.ToDictionary(arg => arg.path, _ => mockFileData);
+            foreach (var arg in args)
+            {
+                _mockFileSystem.AddFile(arg.path, mockFileData);
+            }
 
-            var mockFileSystem = new MockFileSystem(mockFiles);
-
-            var databaseReader = this.CreateDatabaseReader(mockFileSystem, directoryPath, TestScheduleProvider);
+            var databaseReader = _container.Resolve<DatabaseReader>();
+            databaseReader.Initialize(directoryPath);
 
             var tableNames = await databaseReader
                 .GetFieldFilePaths("TestTable")
@@ -95,13 +112,13 @@ namespace PicasaDatabaseReader.Core.Tests
         [Fact]
         public void ShouldNotGetThumbIndex()
         {
-            Logger.LogInformation("ShouldGetTableNames");
+            Logger.Information("ShouldGetTableNames");
 
             var directoryPath = Path.Combine("c:\\", string.Join("\\", Faker.Lorem.Words()));
 
-            var mockFileSystem = new MockFileSystem();
+            var databaseReader = _container.Resolve<DatabaseReader>();
+            databaseReader.Initialize(directoryPath);
 
-            var databaseReader = this.CreateDatabaseReader(mockFileSystem, directoryPath, TestScheduleProvider);
             var thumbIndex = databaseReader.GetThumbIndex();
 
             var autoResetEvent = new AutoResetEvent(false);
@@ -113,11 +130,10 @@ namespace PicasaDatabaseReader.Core.Tests
             autoResetEvent.WaitOne();
         }
 
-
         [Fact]
         public void ShouldGetThumbIndex()
         {
-            Logger.LogInformation("ShouldGetTableNames");
+            Logger.Information("ShouldGetTableNames");
 
             var directoryPath = Path.Combine("c:\\", string.Join("\\", Faker.Lorem.Words()));
 
@@ -138,12 +154,11 @@ namespace PicasaDatabaseReader.Core.Tests
                 thumbIndexContent.AddRange(BitConverter.GetBytes(fileInput.index));
             }
 
-            var mockFileSystem = new MockFileSystem(new Dictionary<string, MockFileData>
-            {
-                { Path.Combine(directoryPath, "thumbindex.db"), new MockFileData(thumbIndexContent.ToArray()) }
-            });
+            _mockFileSystem.AddFile(Path.Combine(directoryPath, "thumbindex.db"), new MockFileData(thumbIndexContent.ToArray()));
+            
+            var databaseReader = _container.Resolve<DatabaseReader>();
+            databaseReader.Initialize(directoryPath);
 
-            var databaseReader = this.CreateDatabaseReader(mockFileSystem, directoryPath, TestScheduleProvider);
             var thumbIndex = databaseReader.GetThumbIndex().ToArray();
 
             var autoResetEvent = new AutoResetEvent(false);
