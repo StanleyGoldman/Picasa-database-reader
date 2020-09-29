@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Autofac" Version="4.9.4" />
+    <PackageReference Include="Autofac" Version="6.0.0" />
     <PackageReference Include="AutofacSerilogIntegration" Version="2.1.0" />
     <PackageReference Include="Bogus" Version="28.4.3" />
     <PackageReference Include="FluentAssertions" Version="5.9.0" />
