@@ -10,7 +10,7 @@
 
   <ItemGroup>
     <PackageReference Include="Serilog" Version="2.9.0" />
-    <PackageReference Include="System.IO.Abstractions" Version="7.0.7" />
+    <PackageReference Include="System.IO.Abstractions" Version="12.2.1" />
     <PackageReference Include="System.Reactive" Version="4.2.0" />
   </ItemGroup>
 
